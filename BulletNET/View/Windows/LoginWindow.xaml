@@ -1,0 +1,39 @@
+﻿<mde:MaterialWindow 
+        x:Class="BulletNET.View.Windows.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:converters ="clr-namespace:BulletNET.Infrastructure.Converters.Converters"
+        xmlns:multiConverters ="clr-namespace:BulletNET.Infrastructure.Converters.MultiConverters"
+        xmlns:mde="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Name="Window"
+        Title="Login" Height="180" Width="400" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" ShowInTaskbar="False" Topmost="True">
+    <Window.Resources>
+        <converters:UserConverter x:Key="UserConverter" />
+        <multiConverters:UserPasswordCommandConverter x:Key="UserPasswordCommandConverter" />
+    </Window.Resources>
+    <DockPanel Margin="10">
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0 10" HorizontalAlignment="Stretch">
+            <TextBlock VerticalAlignment="Center" Width="100" Text=" User" />
+            <TextBox VerticalAlignment="Center" Width="250" Text="{Binding UserName}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0 10" HorizontalAlignment="Stretch">
+            <TextBlock   VerticalAlignment="Center" Width="100" Text=" Password" />
+            <PasswordBox VerticalAlignment="Center" Width="250" x:Name="PasswordBox" />
+        </StackPanel>
+        <UniformGrid  DockPanel.Dock="Bottom" HorizontalAlignment="Center"  VerticalAlignment="Bottom" Height="30" Rows="1">
+            <Button Width="auto" Margin="0 0 10 0"  Style="{StaticResource MaterialDesignRaisedDarkButton}" Content=" Login" IsDefault="True"
+                Command="{Binding TryToLogInCommand}">
+                <Button.CommandParameter>
+                    <MultiBinding Converter="{StaticResource UserPasswordCommandConverter}">
+                        <Binding ElementName="PasswordBox" />
+                        <Binding ElementName="Window" />
+                    </MultiBinding>
+                </Button.CommandParameter>
+            </Button>
+            <Button  Margin="10 0 0 0" Style="{StaticResource MaterialDesignRaisedDarkButton}" Content=" Cancel" IsCancel="True" />
+        </UniformGrid>
+    </DockPanel>
+</mde:MaterialWindow>

@@ -1,0 +1,9 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:l="clr-namespace:BulletNET.Infrastructure.Commands">
+    <l:OpenNewUserWindowCommand x:Key="OpenNewUserWindowCommand" />
+    <l:OpenChangeUserPasswordWindowCommand x:Key="OpenChangeUSerPasswordWindowCommand" />
+    <l:OpenLoginWindowCommand x:Key="OpenLoginWindowCommand" />
+
+    <!-- <l:Command x:Key="Command" />-->
+</ResourceDictionary>

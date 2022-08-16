@@ -1,0 +1,153 @@
+// Komentář
+// delay 1000 			// = 1000ms
+// SetVoltage 22 		// = 2.2V
+// SetCurrent 31 		// = 3.1A
+// SetRelay 1 ON
+// TestVoltage A 5 4,9 5,2	//TestVoltage, channel, min, max, comment
+
+////////////////////////////////////////
+NewGroup First_Level_Test
+////////////////////////////////////////
+
+SetVoltage 42
+delay 500
+Erase
+
+SetRelay ALL OFF
+delay 2000
+SetRelay 15 ON
+delay 500
+SetRelay 14 ON
+delay 1000
+
+TestCurrent 0 35 Ion
+
+SetRelay 1 ON
+SetRelay 7 ON
+delay 500
+
+TestVoltage A 3,135 3,465 3v3_A
+TestVoltage B 1,71 1,89 Vref
+
+SetRelay 1 OFF
+SetRelay 7 OFF
+delay 100
+SetRelay 2 ON
+SetRelay 8 ON
+delay 500
+
+TestVoltage A 3,135 3,465 3v3_MC
+TestVoltage B 1,71 1,89 IN_P
+
+SetRelay 2 OFF
+SetRelay 8 OFF
+delay 100
+SetRelay 3 ON
+SetRelay 9 ON
+delay 500
+
+TestFreq A 24,5 25,5 MCLK
+TestVoltage B 1,71 1,89 OUT
+
+SetRelay 3 OFF
+SetRelay 9 OFF
+delay 100
+SetRelay 10 ON
+delay 500
+
+TestVoltage B 0,5 2,5 IF_P
+
+SetRelay 10 OFF
+delay 100
+SetRelay 12 ON
+delay 500
+
+TestVoltage B 0,5 2,5 IF_N
+
+SetRelay 12 OFF
+delay 100
+SetRelay 13 ON
+delay 500
+
+//TestVoltage B 0 3,3 BT_P20
+
+SetRelay ALL OFF
+
+////////////////////////////////////////
+NewGroup Flash_firmware
+////////////////////////////////////////
+
+Flash BulletSeeker_HighSpeed_v2.0.bin
+delay 2000
+SetRelay ALL OFF
+
+////////////////////////////////////////
+NewGroup Second_Level_Test
+////////////////////////////////////////
+
+Bluetooth TestMode
+
+delay 500
+SetRelay 4 ON
+SetRelay 8 ON
+delay 500
+
+TestVoltage A 0,1 3,2 CP
+TestVoltage B 0,1 3,2 IN_P
+
+SetRelay 4 OFF
+SetRelay 8 OFF
+delay 100
+
+SetRelay 5 ON
+SetRelay 9 ON
+delay 500
+
+TestVoltage A 3,135 3,465 3v3_RF
+TestVoltage B 0,1 3,2 OUT
+
+SetRelay 5 OFF
+SetRelay 9 OFF
+delay 100
+
+SetRelay 6 ON
+SetRelay 10 ON
+delay 500
+
+TestVoltage A 3,135 3,465 MUXOUT
+TestVoltage B 0,5 2,5 IF_P
+
+SetRelay 6 OFF
+SetRelay 10 OFF
+delay 100
+
+SetRelay 12 ON
+delay 500
+
+TestVoltage B 0,5 2,5 IF_N
+
+SetRelay 12 OFF
+delay 100
+
+SetRelay 7 ON
+delay 500
+
+TestVoltage B 1,71 1,89 VREF
+
+SetRelay 7 OFF
+delay 100
+
+SetRelay 13 ON
+delay 500
+
+//TestVoltage B 3,135 3,465 BT_P20
+
+SetRelay ALL OFF
+
+////////////////////////////////////////
+NewGroup Charge_Test
+////////////////////////////////////////
+
+//Bluetooth CheckCharging
+Bluetooth CheckChargeInProgress
+SetRelay ALL OFF

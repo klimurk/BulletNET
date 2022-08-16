@@ -1,0 +1,12 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:l="clr-namespace:BulletNET.Infrastructure.Converters.Converters"
+                    xmlns:m="clr-namespace:BulletNET.Infrastructure.Converters.MultiConverters">
+
+    <l:UserConverter  x:Key="UserConverter" />
+    <l:RadarBoardConverter  x:Key="RadarBoardConverter" />
+    <l:MainBoardSNConverter  x:Key="MainBoardSNConverter" />
+    <l:TestActionNameConverter  x:Key="TestActionNameConverter" />
+    <m:UserPasswordCommandConverter  x:Key="UserPasswordCommandConverter" />
+    
+</ResourceDictionary>
