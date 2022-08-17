@@ -64,9 +64,6 @@ namespace BulletNET.ViewModels.Windows
                 nameof(ManagerUser.UserRoleNum.Manager),
                 nameof(ManagerUser.UserRoleNum.Admin)
             };
-            //RoleNums.Append(nameof(ManagerUser.UserRoleNum.Worker));
-            //RoleNums.Append(nameof(ManagerUser.UserRoleNum.Manager));
-            //RoleNums.Append(nameof(ManagerUser.UserRoleNum.Admin));
         }
 
         #region CreateNewUserCommand
@@ -83,7 +80,7 @@ namespace BulletNET.ViewModels.Windows
         /// </summary>
         /// <param name="arg">The arg.</param>
         /// <returns>A bool.</returns>
-        private bool CanCreateNewUserCommandExecute(object arg) => !string.IsNullOrEmpty(UserName) && !string.IsNullOrEmpty(Description) && !string.IsNullOrEmpty(Password) && !string.IsNullOrEmpty(SelectedRoleNum);
+        private bool CanCreateNewUserCommandExecute(object arg) => !string.IsNullOrEmpty(UserName) && !string.IsNullOrEmpty(Password) && !string.IsNullOrEmpty(SelectedRoleNum);
 
         /// <summary>
         /// Try to log in realization.

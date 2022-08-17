@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 
 namespace PS2000AImports
 {
-    internal  class Imports
+    internal class Imports
     {
         #region Constants
 

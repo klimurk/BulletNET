@@ -1,4 +1,4 @@
-﻿<mde:MaterialWindow 
+﻿<mde:MaterialWindow
         x:Class="BulletNET.View.Windows.LoginWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -9,6 +9,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         x:Name="Window"
+        FocusManager.FocusedElement="{Binding ElementName=LoginBox}"
         Title="Login" Height="180" Width="400" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" ShowInTaskbar="False" Topmost="True">
     <Window.Resources>
         <converters:UserConverter x:Key="UserConverter" />
@@ -17,7 +18,7 @@
     <DockPanel Margin="10">
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0 10" HorizontalAlignment="Stretch">
             <TextBlock VerticalAlignment="Center" Width="100" Text=" User" />
-            <TextBox VerticalAlignment="Center" Width="250" Text="{Binding UserName}" />
+            <TextBox x:Name="LoginBox" VerticalAlignment="Center" Width="250" Text="{Binding UserName}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0 10" HorizontalAlignment="Stretch">
             <TextBlock   VerticalAlignment="Center" Width="100" Text=" Password" />

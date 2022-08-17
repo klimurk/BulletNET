@@ -19,7 +19,7 @@ namespace BulletNET.Services.Managers
         bool ChangeUserPassword(string userName, string password);
 
         event EventHandler UserChanged;
-
+        event EventHandler UserAdded;
         public enum UserRoleNum
         {
             None = 0,

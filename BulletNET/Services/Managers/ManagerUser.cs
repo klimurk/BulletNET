@@ -12,6 +12,8 @@ namespace BulletNET.Services.Managers
 
         public event EventHandler UserChanged;
 
+        public event EventHandler UserAdded;
+
         private User _LoginedUser;
 
         public User? LoginedUser
@@ -77,6 +79,7 @@ namespace BulletNET.Services.Managers
                 Hashcode = CreateHashCode(password),
                 RoleNum = RoleNum
             });
+            UserAdded?.Invoke(this, EventArgs.Empty);
             _IUserDialogService.ShowInformation("User has been created", "New user");
             return true;
         }

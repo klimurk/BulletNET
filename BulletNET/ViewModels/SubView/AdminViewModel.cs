@@ -14,7 +14,7 @@ namespace BulletNET.ViewModels.SubView
 
         private readonly CollectionViewSource _UserViewSource;
         private readonly IManagerUser _IManagerUser;
-        private IEnumerable<User> _Users;
+        private ObservableCollection<User> _Users;
 
         #endregion Users
 
@@ -47,20 +47,20 @@ namespace BulletNET.ViewModels.SubView
             )
         {
             _IManagerUser = IManagerUser;
-            try
+            _IManagerUser.UserAdded += _IManagerUser_UserAdded; ;
+            _Users.CollectionChanged += _IManagerUser_UserAdded;
+            _Users.Add(_IManagerUser.Users);
+
+            _UserViewSource = new()
             {
-                _Users = _IManagerUser.Users;
-                _UserViewSource = new()
-                {
-                    Source = _Users.ToList(),
-                    SortDescriptions = { new SortDescription(nameof(User.Name), ListSortDirection.Descending) }
-                };
-                _UserViewSource.Filter += _UserViewSource_Filter;
-            }
-            catch
-            {
-            }
+                Source = _Users.ToList(),
+                SortDescriptions = { new SortDescription(nameof(User.Name), ListSortDirection.Descending) }
+            };
+            _UserViewSource.Filter += _UserViewSource_Filter;
+
         }
+
+        private void _IManagerUser_UserAdded(object? sender, EventArgs e) => UsersView.Refresh();
 
         private void _UserViewSource_Filter(object sender, FilterEventArgs e)
         {
