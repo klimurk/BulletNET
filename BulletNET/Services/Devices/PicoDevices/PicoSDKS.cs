@@ -1,46 +1,143 @@
-﻿using PicoSDK;
+﻿using BulletNET.Services.Devices.Base;
+using BulletNET.Services.Devices.PicoDevices.Interface;
+using MathNet.Numerics.IntegralTransforms;
+using Pallet.Services.UserDialogService.Interfaces;
+using PicoSDK;
+using System.Numerics;
 
 namespace BulletNET.Services.Devices.PicoDevices
 {
-    internal class PicoSDKS
+    internal class PicoSDKS : Test, IPico
     {
-        private void Main()
-        {
+        private readonly IUserDialogService _IUserDialogService;
 
-            foreach (var d in PicoDevice.Enumerate())
+        private PicoDevice? device;
+
+        public bool isEnabled => !string.IsNullOrEmpty(device?.Serial);
+
+        public PicoSDKS(IUserDialogService IUserDialogService)
+        {
+            _IUserDialogService = IUserDialogService;
+        }
+
+        public void Connect()
+        {
+            // variant 2206B serial GP781/0442
+            device = PicoDevice.Open();
+        }
+
+        public bool CheckVoltage(double minimum, double maximum, string valueName, string channel)
+        {
+            device.StopStreaming();
+            uint frequence = 200_000;
+            int samplesCount = 200_000;
+
+            List<float> samplesMeasure = GetSamplesData(samplesCount, frequence, channel).ToList();
+
+            //device.EnableChannel(channel, "5V");
+
+            //device.StreamingData += (sender, args) =>
+            //{
+            //    Console.WriteLine("Received streaming data...");
+
+            //    foreach (var (ch, ch_samples) in args.Data)
+            //    {
+            //        av = ch_samples.Average();
+            //    }
+
+            //    Console.WriteLine("");
+            //};
+
+            //var samplesPerSecond = device.StartStreaming(200_000);
+
+            //while (av == 0)
+            //{
+            //    Thread.Sleep(100);
+            //}
+            //device.StopStreaming();
+            //device.DisableChannel(channel);
+            Measured = (float)samplesMeasure.Average();
+            IsPassed = Measured >= minimum && Measured <= maximum;
+            EndTest();
+            if (!IsPassed && _IUserDialogService.ConfirmInformation("> " + TestName + " < failed. Retry?", "Test failed")) CheckVoltage(minimum, maximum, valueName, channel);
+            return IsPassed;
+        }
+
+        public bool CheckFrequency(double minimum, double maximum, string TestName)
+        {
+            const int samplesCount = 4096;
+            const uint frequence = 50000000;
+            const uint samplingFrequency = 125;
+            const string channel = "A";
+
+            List<float> samplesMeasure = GetSamplesData(samplesCount, frequence, channel).ToList();
+
+            Measured = (float)GetFrequencyFourier(samplesCount, samplingFrequency, samplesMeasure);
+
+            IsPassed = Measured >= minimum && Measured <= maximum;
+
+            EndTest();
+            if (!IsPassed && _IUserDialogService.ConfirmInformation("> " + TestName + " < failed. Retry?", "Test failed")) CheckFrequency(minimum, maximum, TestName);
+            return IsPassed; ;
+        }
+
+        private float GetFrequencyFourier(int samplesCount, uint samplingFrequency, IEnumerable<float> samplesMeasure)
+        {
+            List<float> samples = samplesMeasure.ToList();
+            float hzPerSample = samplingFrequency / (float)samplesCount; // frequency resolution = sample f./N
+            float freq = 0;
+
+            double highestMagnitude = 0;
+
+
+            Complex[] samplesComplex = new Complex[samplesCount];
+
+            for (int i = 0; i < samplesCount; i++)
             {
-                Console.WriteLine("PicoScope {0} with serial {1}", d.variant, d.serial);
+                samplesComplex[i] = new Complex(samples[i], 0);
             }
 
-            var device = PicoDevice.Open();
-            Console.WriteLine("Device variant: {0}", device.Variant);
-            Console.WriteLine("Device serial: {0}", device.Serial);
+            Fourier.Forward(samplesComplex, FourierOptions.NoScaling);
 
-            var ranges = device.GetValidRanges("A");
 
-            Console.WriteLine("Valid ranges for channel A: {0}", string.Join(", ", ranges));
+            for (int i = 1; i < samplesCount / 4; i++)
+            {
+                double currentMagnitude = samplesComplex[i].Magnitude;
 
-            device.EnableChannel("A", "200mV");
-            device.EnableChannel("b", "20 v", "dc");
+                if (currentMagnitude > highestMagnitude)
+                {
+                    highestMagnitude = currentMagnitude;
+                    freq = i * hzPerSample;
+                }
+            }
+
+            return freq;
+        }
+
+        private IEnumerable<float> GetSamplesData(int samplesCount, uint frequence, string channel)
+        {
+            List<float> samplesMeasure = new();
+            device.StopStreaming();
+
+            device.EnableChannel(channel, "5V");
 
             device.StreamingData += (sender, args) =>
             {
-                Console.WriteLine("Received streaming data...");
-
                 foreach (var (ch, ch_samples) in args.Data)
                 {
-                    Console.WriteLine("Channel {0} has {1} samples", ch, ch_samples.Length);
+                    samplesMeasure.AddRange(ch_samples);
                 }
-
-                Console.WriteLine("");
             };
+            var samplesPerSecond = device.StartStreaming(frequence);
+            while (samplesMeasure.Count < samplesCount)
+            {
+                Thread.Sleep(100);
+            }
 
-            var samplesPerSecond = device.StartStreaming(1_000_000);
+            device.StopStreaming();
+            device.DisableChannel(channel);
 
-            Console.WriteLine("Started streaming with {0} samples per second", samplesPerSecond);
-
-            Console.WriteLine("Hit ENTER to stop and exit");
-            Console.ReadLine();
+            return samplesMeasure;
         }
     }
 }

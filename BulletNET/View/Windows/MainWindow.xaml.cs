@@ -14,6 +14,6 @@ public partial class MainWindow : MaterialWindow
     public MainWindow()
     {
         InitializeComponent();
-        DataContext = App.Services.GetService(typeof(MainWindowViewModel)) as MainWindowViewModel;
+        //DataContext = App.Services.GetService(typeof(MainWindowViewModel)) as MainWindowViewModel;
     }
 }

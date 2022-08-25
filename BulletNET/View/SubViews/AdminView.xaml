@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
     mc:Ignorable="d"
+    DataContext="{Binding  AdminModel,Source={StaticResource Locator}}"
     d:DesignHeight="1030" d:DesignWidth="1720">
 
     <md:Card>

@@ -29,7 +29,7 @@ namespace BulletNET.Services
                 .AddSingleton<IBarcodeCRC, BarcodeCRC>()
                 .AddSingleton<IManson, Manson>()
                 .AddSingleton<IQuido, Quido>()
-                .AddSingleton<IPico, Pico>()
+                .AddSingleton<IPico, PicoSDKS>()
                 .AddSingleton<IBluetooth, Bluetooth>()
                 .AddSingleton<IDelay, Delay>()
                 .AddSingleton<IManagerUser, ManagerUser>()

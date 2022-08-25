@@ -160,7 +160,7 @@ namespace BulletNET.Services.SequenceReaderService
                             {
                                 TestAction? test = ((TestGroup)o).TestActions.First(s => s.Name == testname && s.IsPassed == null);
                                 test.IsRunning = true;
-                                test.IsPassed = _IPico.MeasureVoltage(minv, maxv, words[4], words[1]);
+                                test.IsPassed = _IPico.CheckVoltage(minv, maxv, words[4], words[1]);
                                 test.Measured = _IPico.Measured;
                             });
                         }
@@ -214,7 +214,7 @@ namespace BulletNET.Services.SequenceReaderService
                             {
                                 TestAction? test = ((TestGroup)o).TestActions.First(s => s.Name == testname && s.IsPassed == null);
                                 test.IsRunning = true;
-                                test.IsPassed = _IPico.ReadFreq(minf, maxf, words[3]);
+                                test.IsPassed = _IPico.CheckFrequency(minf, maxf, words[3]);
                                 test.Measured = _IPico.Measured;
                             });
                         }

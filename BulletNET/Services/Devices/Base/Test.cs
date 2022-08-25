@@ -10,7 +10,7 @@
 
         public bool IsRunning { get; protected set; }
         public bool IsError { get; protected set; }
-        public bool isEnabled { get; set; }
+        public bool isEnabled { get; protected set; }
 
         
 

@@ -4,7 +4,6 @@ namespace BulletNET.Services.Devices.BluetoothDevice.Interface
 {
     public interface IBluetooth : ITest
     {
-        bool isEnabled { get; set; }
         bool BLEMessageReceived { get; set; }
         byte BoardStatusPacket { get; set; }
         bool AdvertisementReceived { get; set; }

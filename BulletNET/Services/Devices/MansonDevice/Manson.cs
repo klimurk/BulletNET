@@ -20,7 +20,7 @@ namespace BulletNET.Services.Devices.MansonDevice
         public int C_VOLTAGE { get; private set; }
         public int C_CURRENT { get; private set; }
         public bool STATUS { get; private set; }
-        public bool isEnabled { get; set; }
+        public bool isEnabled { get;  set; }
 
         //
         private readonly SerialPort SP_Manson = new SerialPort();

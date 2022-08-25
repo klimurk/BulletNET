@@ -4,17 +4,11 @@ namespace BulletNET.Services.Devices.PicoDevices.Interface
 {
     public interface IPico : ITest
     {
-        bool isEnabled { get; set; }
 
         void Connect();
 
+        bool CheckFrequency(double minimum, double maximum, string TestName);
 
-        bool ReadFreq(double minimum, double maximum, string TestName);
-
-        double[] ReadVoltage();
-
-        void SetSignalGenerator(bool ON, uint pkToPk, uint frequency);
-
-        bool MeasureVoltage(double minimum, double maximum, string valueName, string channel);
+        bool CheckVoltage(double minimum, double maximum, string valueName, string channel);
     }
 }

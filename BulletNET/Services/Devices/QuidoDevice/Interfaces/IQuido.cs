@@ -4,7 +4,6 @@ namespace BulletNET.Services.Devices.QuidoDevice.Interfaces
 {
     public interface IQuido : ITest
     {
-        bool isEnabled { get; set; }
 
         void Read();
 

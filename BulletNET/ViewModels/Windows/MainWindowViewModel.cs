@@ -96,6 +96,7 @@ internal class MainWindowViewModel : ViewModel
 
     #endregion Properties (View)
 
+    private bool IsAdmin => CurrentUser?.RoleNum >= (int)IManagerUser.UserRoleNum.Admin;
     public List<INavigationItem> NavigationItems { get; set; }
 
     private INavigationItem _NavigationItemSelected;
@@ -180,10 +181,12 @@ internal class MainWindowViewModel : ViewModel
             {
                 Label = "Admin",
                 Icon=PackIconKind.AdministratorOutline,
+                IsSelectable = IsAdmin,
                 NavigationItemSelectedCallback = _ =>
-                CurrentModel = CurrentUser?.RoleNum >= (int)IManagerUser.UserRoleNum.Admin ? new AdminViewModel(_IManagerUser): CurrentModel
+                CurrentModel = new AdminViewModel(_IManagerUser)
             }
         };
+
     }
 
     private void _IManagerUser_UserChanged(object? sender, EventArgs e)

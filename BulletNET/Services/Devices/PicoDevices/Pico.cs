@@ -861,7 +861,7 @@ namespace BulletNET.Services.Devices.PicoDevices
         /// Reads voltage on both channels
         /// </summary>
         /// <returns>voltage [mV]</returns>
-        public double[] ReadVoltage()
+        private double[] ReadVoltage()
         {
             int[][] voltageData = ReadData(2, 200000);
 
@@ -871,7 +871,7 @@ namespace BulletNET.Services.Devices.PicoDevices
             return new double[] { ChannelA, ChannelB };
         }
 
-        public bool ReadFreq(double minimum, double maximum, string testName)
+        public bool CheckFrequency(double minimum, double maximum, string testName)
         {
             StartTest(testName);
             int[][] voltageData = ReadData(2, 4096);
@@ -906,7 +906,7 @@ namespace BulletNET.Services.Devices.PicoDevices
 
             IsPassed = Measured >= minimum && Measured <= maximum;
             EndTest();
-            if (!IsPassed && _IUserDialogService.ConfirmInformation("> " + TestName + " < failed. Retry?", "Test failed")) ReadFreq(minimum, maximum, testName);
+            if (!IsPassed && _IUserDialogService.ConfirmInformation("> " + TestName + " < failed. Retry?", "Test failed")) CheckFrequency(minimum, maximum, testName);
             return IsPassed; ;
         }
 
@@ -1001,7 +1001,7 @@ namespace BulletNET.Services.Devices.PicoDevices
             return voltageData;
         }
 
-        public void SetSignalGenerator(bool ON, uint pkToPk, uint frequency)
+        private void SetSignalGenerator(bool ON, uint pkToPk, uint frequency)
         {
             //uint pkToPk = 1000000; // +/- 500 mV
             uint waveformSize = 0;
@@ -1159,7 +1159,7 @@ namespace BulletNET.Services.Devices.PicoDevices
             return Status;
         }
 
-        public bool MeasureVoltage(double minimum, double maximum, string valueName, string channel)
+        public bool CheckVoltage(double minimum, double maximum, string valueName, string channel)
         {
             StartTest(valueName);
             double[] val = ReadVoltage();
@@ -1179,7 +1179,7 @@ namespace BulletNET.Services.Devices.PicoDevices
             }
             IsPassed = Measured >= minimum && Measured <= maximum;
             EndTest();
-            if (!IsPassed && _IUserDialogService.ConfirmInformation("> " + TestName + " < failed. Retry?", "Test failed")) MeasureVoltage(minimum, maximum, valueName, channel);
+            if (!IsPassed && _IUserDialogService.ConfirmInformation("> " + TestName + " < failed. Retry?", "Test failed")) CheckVoltage(minimum, maximum, valueName, channel);
             return IsPassed;
         }
     }

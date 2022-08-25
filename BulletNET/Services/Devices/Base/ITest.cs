@@ -2,7 +2,7 @@
 
 public interface ITest
 {
-    bool isEnabled { get; set; }
+    bool isEnabled { get; }
     string TestName { get; }
     DateTime TimeStamp { get; }
     bool IsScheduled { get; }
