@@ -23,7 +23,8 @@ namespace BulletNET.Services.Devices.PicoDevices
         public void Connect()
         {
             // variant 2206B serial GP781/0442
-            device = PicoDevice.Open();
+            var devices = PicoDevice.Enumerate();
+            device = PicoDevice.Open(devices[0].serial, true);
         }
 
         public bool CheckVoltage(double minimum, double maximum, string valueName, string channel)
@@ -89,7 +90,6 @@ namespace BulletNET.Services.Devices.PicoDevices
 
             double highestMagnitude = 0;
 
-
             Complex[] samplesComplex = new Complex[samplesCount];
 
             for (int i = 0; i < samplesCount; i++)
@@ -98,7 +98,6 @@ namespace BulletNET.Services.Devices.PicoDevices
             }
 
             Fourier.Forward(samplesComplex, FourierOptions.NoScaling);
-
 
             for (int i = 1; i < samplesCount / 4; i++)
             {
