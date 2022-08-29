@@ -23,51 +23,39 @@ namespace BulletNET.Services.Devices.PicoDevices
         public void Connect()
         {
             // variant 2206B serial GP781/0442
-            var devices = PicoDevice.Enumerate();
-            device = PicoDevice.Open(devices[0].serial, true);
+            try
+            {
+                var devices = PicoDevice.Enumerate(true);
+                device = PicoDevice.Open(devices[0].serial, true);
+            }
+            catch
+            {
+                _IUserDialogService.ShowError("Pico is not finded", "Pico");
+            }
         }
 
         public bool CheckVoltage(double minimum, double maximum, string valueName, string channel)
         {
+            StartTest($"Check voltage {valueName} channel {channel}");
             device.StopStreaming();
             uint frequence = 200_000;
             int samplesCount = 200_000;
 
             List<float> samplesMeasure = GetSamplesData(samplesCount, frequence, channel).ToList();
 
-            //device.EnableChannel(channel, "5V");
-
-            //device.StreamingData += (sender, args) =>
-            //{
-            //    Console.WriteLine("Received streaming data...");
-
-            //    foreach (var (ch, ch_samples) in args.Data)
-            //    {
-            //        av = ch_samples.Average();
-            //    }
-
-            //    Console.WriteLine("");
-            //};
-
-            //var samplesPerSecond = device.StartStreaming(200_000);
-
-            //while (av == 0)
-            //{
-            //    Thread.Sleep(100);
-            //}
-            //device.StopStreaming();
-            //device.DisableChannel(channel);
             Measured = (float)samplesMeasure.Average();
             IsPassed = Measured >= minimum && Measured <= maximum;
             EndTest();
-            if (!IsPassed && _IUserDialogService.ConfirmInformation("> " + TestName + " < failed. Retry?", "Test failed")) CheckVoltage(minimum, maximum, valueName, channel);
+            if (!IsPassed && _IUserDialogService.ConfirmInformation($"{TestName} failed. Retry?", "Test failed")) CheckVoltage(minimum, maximum, valueName, channel);
             return IsPassed;
         }
 
         public bool CheckFrequency(double minimum, double maximum, string TestName)
         {
-            const int samplesCount = 4096;
-            const uint frequence = 50000000;
+            StartTest(TestName);
+
+            const int samplesCount = 4_096;
+            const uint frequence = 50_000_000;
             const uint samplingFrequency = 125;
             const string channel = "A";
 
@@ -78,7 +66,7 @@ namespace BulletNET.Services.Devices.PicoDevices
             IsPassed = Measured >= minimum && Measured <= maximum;
 
             EndTest();
-            if (!IsPassed && _IUserDialogService.ConfirmInformation("> " + TestName + " < failed. Retry?", "Test failed")) CheckFrequency(minimum, maximum, TestName);
+            if (!IsPassed && _IUserDialogService.ConfirmInformation($"{TestName} failed. Retry?", "Test failed")) CheckFrequency(minimum, maximum, TestName);
             return IsPassed; ;
         }
 

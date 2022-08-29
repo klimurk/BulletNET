@@ -43,4 +43,8 @@ public class TestAction : NamedEntity, ICloneable
     public event EventHandler RefreshEvents;
 
     public object Clone() => MemberwiseClone();
+
+
+    [NotMapped]
+    public int groupId { get; set; }
 }

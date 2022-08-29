@@ -14,4 +14,7 @@ public class RadarBoard : Entity
 
     [InverseProperty("RadarBoard")]
     public ICollection<TestGroup> TestGroups { get; set; } = new HashSet<TestGroup>();
+
+    [NotMapped]
+    public DateTime datetime { get; set; }
 }

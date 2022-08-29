@@ -4,6 +4,7 @@ using BulletNET.Services.Devices.QuidoDevice.Interfaces;
 using BulletNET.Services.Devices.QuidoDevice.QuidoSupport;
 using Microsoft.Win32;
 using Pallet.Services.UserDialogService.Interfaces;
+using System.IO;
 using System.IO.Ports;
 using System.Text.RegularExpressions;
 
@@ -282,13 +283,50 @@ namespace BulletNET.Services.Devices.QuidoDevice
 
             IsPassed = !IsError;
             EndTest();
-            if (!IsPassed && _IUserDialogService.ConfirmInformation("> " + TestName + " < failed. Retry?", "Test failed")) CommunicationTest(relay, relayON);
+            if (!IsPassed && _IUserDialogService.ConfirmInformation($"{TestName} failed. Retry?", "Test failed")) CommunicationTest(relay, relayON);
             return IsPassed;
         }
 
         public bool Flash(string firmwareName)
         {
             StartTest("Flash firmware " + firmwareName);
+
+            Process STM32Process = null;
+            var path = @"C:\Program Files\STMicroelectronics\STM32Cube\STM32CubeProgrammer\bin\STM32_Programmer_CLI.exe";
+            if (File.Exists(path))
+            {
+                STM32Process = new()
+                {
+                    StartInfo =
+                            {
+                                CreateNoWindow = true,
+                                UseShellExecute = false,
+                                RedirectStandardOutput = true,
+                                FileName = path,
+                                Arguments = "-c port=SWD freq=4000 mode=normal -e all"
+                            }
+                };
+            }
+            var path86 = @"C:\Program Files(x86)\STMicroelectronics\STM32Cube\STM32CubeProgrammer\bin\STM32_Programmer_CLI.exe";
+            if (File.Exists(path86))
+            {
+                STM32Process = new()
+                {
+                    StartInfo =
+                            {
+                                CreateNoWindow = true,
+                                UseShellExecute = false,
+                                RedirectStandardOutput = true,
+                                FileName = path86,
+                                Arguments = "-c port=SWD freq=4000 mode=normal -e all"
+                            }
+                };
+            }
+            if (STM32Process is null)
+            {
+                _IUserDialogService.ShowError("STM32_Programmer_CLI.exe has not been finded. Please install in C drive", "STM32 Programmer");
+                return false;
+            }
             for (int i = 0; i < 3 && IsPassed; i++)
             {
                 SetAllOff();
@@ -298,23 +336,12 @@ namespace BulletNET.Services.Devices.QuidoDevice
                 Set(14, true);
                 Thread.Sleep(1000);
 
-                Process p = new()
-                {
-                    StartInfo =
-                    {
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
-                        RedirectStandardOutput = true,
-                        FileName = @"C:\Program Files\STMicroelectronics\STM32Cube\STM32CubeProgrammer\bin\STM32_Programmer_CLI.exe",
-                        Arguments =@"-c port=SWD -w "+System.IO.Directory.GetCurrentDirectory()+@"\Resources\"+ firmwareName + @" 0x08000000 -v "
-                    }
-                };
-                p.Start();
+                STM32Process.Start();
                 // Redirect the output stream of the child process.
 
-                string output = p.StandardOutput.ReadToEnd();
+                string output = STM32Process.StandardOutput.ReadToEnd();
 
-                p.WaitForExit();
+                STM32Process.WaitForExit();
 
                 if (output.Contains("Download verified successfully"))
                 {
@@ -359,13 +386,51 @@ namespace BulletNET.Services.Devices.QuidoDevice
             }
             IsPassed = !IsError;
             EndTest();
-            if (!IsPassed && _IUserDialogService.ConfirmInformation("> " + TestName + " < failed. Retry?", "Test failed")) Flash(firmwareName);
+            if (!IsPassed && _IUserDialogService.ConfirmInformation($"{TestName} failed. Retry?", "Test failed")) Flash(firmwareName);
             return IsPassed;
         }
 
         public bool EraseFirmware()
         {
             StartTest("Erase firmware");
+
+            Process STM32Process = null;
+            var path = @"C:\Program Files\STMicroelectronics\STM32Cube\STM32CubeProgrammer\bin\STM32_Programmer_CLI.exe";
+            if (File.Exists(path))
+            {
+                STM32Process = new()
+                {
+                    StartInfo =
+                            {
+                                CreateNoWindow = true,
+                                UseShellExecute = false,
+                                RedirectStandardOutput = true,
+                                FileName = path,
+                                Arguments = "-c port=SWD freq=4000 mode=normal -e all"
+                            }
+                };
+            }
+            var path86 = @"C:\Program Files(x86)\STMicroelectronics\STM32Cube\STM32CubeProgrammer\bin\STM32_Programmer_CLI.exe";
+            if (File.Exists(path86))
+            {
+                STM32Process = new()
+                {
+                    StartInfo =
+                            {
+                                CreateNoWindow = true,
+                                UseShellExecute = false,
+                                RedirectStandardOutput = true,
+                                FileName = path86,
+                                Arguments = "-c port=SWD freq=4000 mode=normal -e all"
+                            }
+                };
+            }
+            if (STM32Process is null)
+            {
+                _IUserDialogService.ShowError("STM32_Programmer_CLI.exe has not been finded. Please install in C drive", "STM32 Programmer");
+                return false;
+            }
+
             for (int i = 0; i < 3 && !IsPassed; i++)
             {
                 SetAllOff();
@@ -375,22 +440,11 @@ namespace BulletNET.Services.Devices.QuidoDevice
 
                 for (int j = 0; j < 10 && !IsPassed; j++)
                 {
-                    Process p = new()
-                    {
-                        StartInfo =
-                        {
-                            CreateNoWindow = true,
-                            UseShellExecute = false,
-                            RedirectStandardOutput = true,
-                            FileName = @"C:\Program Files\STMicroelectronics\STM32Cube\STM32CubeProgrammer\bin\STM32_Programmer_CLI.exe",
-                            Arguments = "-c port=SWD freq=4000 mode=normal -e all"
-                        }
-                    };
                     // Redirect the output stream of the child process.
-                    p.Start();
+                    STM32Process.Start();
 
-                    string output = p.StandardOutput.ReadToEnd();
-                    p.WaitForExit();
+                    string output = STM32Process.StandardOutput.ReadToEnd();
+                    STM32Process.WaitForExit();
 
                     if (output.Contains("Mass erase successfully achieved"))
                     {
@@ -403,7 +457,7 @@ namespace BulletNET.Services.Devices.QuidoDevice
                 }
             }
             EndTest();
-            if (!IsPassed && _IUserDialogService.ConfirmInformation("> " + TestName + " < failed. Retry?", "Test failed")) EraseFirmware();
+            if (!IsPassed && _IUserDialogService.ConfirmInformation($"{TestName} failed. Retry?", "Test failed")) EraseFirmware();
             return IsPassed;
         }
     }

@@ -15,7 +15,7 @@ namespace BulletNET.Services.Managers
         bool IsAdmin { get; }
 
         bool CreateNewUser(string userName, string Description, string password, int RoleNum);
-
+        public string CreateHashCode(string toHash);
         bool ChangeUserPassword(string userName, string password);
 
         event EventHandler UserChanged;

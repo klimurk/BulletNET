@@ -1,5 +1,6 @@
 ﻿using BulletNET.Database.Repositories.Interfaces;
 using BulletNET.EntityFramework.Entities.Radar;
+using BulletNET.EntityFramework.Entities.Users;
 using BulletNET.Infrastructure.Commands;
 using BulletNET.Services.BarcodeReader.Interface;
 using BulletNET.Services.Devices.BluetoothDevice.Interface;
@@ -12,6 +13,7 @@ using BulletNET.Services.UserDialogService.Interfaces;
 using BulletNET.ViewModels.Base;
 using LiveCharts;
 using LiveCharts.Wpf;
+using MySqlConnector;
 using Pallet.Services.UserDialogService.Interfaces;
 
 namespace BulletNET.ViewModels.SubView
@@ -98,12 +100,12 @@ namespace BulletNET.ViewModels.SubView
 
         #region IS without database
 
-        private bool _IsWithouDatabase;
+        private bool _IsWithoutDatabase;
 
-        public bool IsWithouDatabase
+        public bool IsWithoutDatabase
         {
-            get => _IsWithouDatabase;
-            set => Set(ref _IsWithouDatabase, value);
+            get => _IsWithoutDatabase;
+            set => Set(ref _IsWithoutDatabase, value);
         }
 
         #endregion IS without database
@@ -527,6 +529,123 @@ namespace BulletNET.ViewModels.SubView
 
         #endregion ReadSequenceFileCommand
 
+        #region ChangeDBCommand
+
+        private ICommand _ChangeDBCommand;
+
+        /// <summary>
+        /// Default command.
+        /// </summary>
+        public ICommand ChangeDBCommand => _ChangeDBCommand ??= new LambdaCommand(OnChangeDBCommandExecuted, CanChangeDBCommandExecute);
+
+        /// <summary>
+        /// Can execute default command .
+        /// </summary>
+        /// <param name="arg">The arg.</param>
+        /// <returns>A bool.</returns>
+        private bool CanChangeDBCommandExecute(object arg) => true;
+
+        /// <summary>
+        /// Default function.
+        /// </summary>
+        /// <param name="obj">The obj.</param>
+        private void OnChangeDBCommandExecuted(object obj)
+        {
+            List<RadarBoard> RadarBoardList = new();
+            List<TestGroup> TestGroupList = new();
+            List<TestAction> TestActionList = new();
+            string _connStr = @"server=192.168.123.64;user=root;database=BulletSeekerTest;port=3306;password=Pa44word;SslMode=none";
+            MySqlConnection _conn;
+            _conn = new MySqlConnection(_connStr);
+
+            _conn.Open();
+
+            MySqlCommand cmdGroup = new()
+            {
+                Connection = _conn
+            };
+
+            cmdGroup.CommandText = "SELECT mainBoardID,radarBoardID,datetime FROM MainRadarBoardPairing";
+            MySqlDataReader rdrGroup = cmdGroup.ExecuteReader();
+            while (rdrGroup.Read())
+            {
+                string mainboard = rdrGroup[0].ToString();
+                string radarboard = rdrGroup[1].ToString();
+                DateTime.TryParse((rdrGroup[2]).ToString(), out DateTime datetime);
+
+                RadarBoardList.Add(new()
+                {
+                    MainBoardID = mainboard,
+                    RadarBoardID = radarboard,
+                });
+            }
+            rdrGroup.Close();
+            cmdGroup.CommandText = "SELECT name, datetime, boardSN, id  FROM TestGroup";
+            rdrGroup = cmdGroup.ExecuteReader();
+
+            User tempUser = _IManagerUser.Users.First(s => s.Name == "simon.novotny");
+
+            while (rdrGroup.Read())
+            {
+                string name = rdrGroup[0].ToString();
+                DateTime.TryParse(rdrGroup[1].ToString(), out DateTime datetime);
+                string board = rdrGroup[2].ToString();
+                int.TryParse(rdrGroup[3].ToString(), out int intern);
+
+                TestGroupList.Add(new()
+                {
+                    Name = name,
+                    TimeStamp = datetime,
+                    User = tempUser,
+                    internalId = intern,
+                    RadarBoard = RadarBoardList.Any(s => s.MainBoardID == board) ? RadarBoardList.First(s => s.MainBoardID == board) : null
+                });
+            }
+
+            rdrGroup.Close();
+            cmdGroup.CommandText = "SELECT measured,maximum, minimum, groupID, valueName, pass  FROM TestAction";
+            rdrGroup = cmdGroup.ExecuteReader();
+
+            while (rdrGroup.Read())
+            {
+                float.TryParse(rdrGroup[0].ToString(), out float measured);
+                float.TryParse(rdrGroup[1].ToString(), out float maximum);
+                float.TryParse(rdrGroup[2].ToString(), out float minimum);
+                int.TryParse(rdrGroup[3].ToString(), out int groupID);
+                string name = rdrGroup[4].ToString();
+                bool.TryParse(rdrGroup[5].ToString(), out bool pass);
+
+                TestActionList.Add(new()
+                {
+                    Name = name,
+                    IsPassed = pass,
+                    Maximum = maximum,
+                    Minimum = minimum,
+                    Measured = measured,
+                    TestGroup = TestGroupList.Any(s => s.internalId == groupID) ? TestGroupList.First(s => s.internalId == groupID) : null,
+                });
+            }
+            foreach (var testAction in TestActionList)
+                testAction.TestGroup?.TestActions.Add(testAction);
+
+            foreach (var testgroup in TestGroupList)
+                testgroup.RadarBoard?.TestGroups.Add(testgroup);
+
+            TestActionList.RemoveAll(s => s.TestGroup is null);
+            TestGroupList.RemoveAll(s => s.RadarBoard is null);
+            TestGroupList.DistinctBy(s => s.TimeStamp);
+
+            try
+            {
+                _IRepositoryRadarBoards.Add(RadarBoardList);
+                _IRepositoryTestGroups.Add(TestGroupList);
+                _IRepositoryTestActions.Add(TestActionList);
+            }
+            catch { };
+        }
+
+        #endregion ChangeDBCommand
+
         #endregion Commands
 
         public void ReadSequenceFile()
@@ -593,6 +712,7 @@ namespace BulletNET.ViewModels.SubView
             }
 
             _IsTestStarted = true;
+            TestGroupSelected = TestGroups[0];
 
             new Thread(() =>
             {
@@ -606,23 +726,26 @@ namespace BulletNET.ViewModels.SubView
                 {
                     testGroup.OnTestEvents();
 
-                    TestGroup? test = (TestGroup)testGroup.Clone();
-                    test.TimeStamp = DateTime.Now;
-                    test.User = _IManagerUser.LoginedUser;
-
-                    if (!_IRepositoryRadarBoards.Items.Any(s => s.RadarBoardID == SerialNumberRadar && s.MainBoardID == SerialNumberBoard))
+                    if (!IsWithoutDatabase)
                     {
-                        _IRepositoryRadarBoards.Add(new RadarBoard()
+                        TestGroup? test = (TestGroup)testGroup.Clone();
+                        test.TimeStamp = DateTime.Now;
+                        test.User = _IManagerUser.LoginedUser;
+
+                        if (!_IRepositoryRadarBoards.Items.Any(s => s.RadarBoardID == SerialNumberRadar && s.MainBoardID == SerialNumberBoard))
                         {
-                            RadarBoardID = SerialNumberRadar,
-                            MainBoardID = SerialNumberBoard
-                        });
+                            _IRepositoryRadarBoards.Add(new RadarBoard()
+                            {
+                                RadarBoardID = SerialNumberRadar,
+                                MainBoardID = SerialNumberBoard
+                            });
+                        }
+
+                        test.RadarBoard = _IRepositoryRadarBoards.Items.First(s => s.RadarBoardID == SerialNumberRadar && s.MainBoardID == SerialNumberBoard);
+
+                        _IRepositoryTestGroups.Add(test);
+                        _IRepositoryTestActions.Add(test.TestActions);
                     }
-
-                    test.RadarBoard = _IRepositoryRadarBoards.Items.First(s => s.RadarBoardID == SerialNumberRadar && s.MainBoardID == SerialNumberBoard);
-
-                    _IRepositoryTestGroups.Add(test);
-                    _IRepositoryTestActions.Add(test.TestActions);
 
                     if ((testGroup.IsPassed is null || !(bool)testGroup.IsPassed) && !_IUserDialogService.ConfirmInformation("Test obsahuje neplatné akce, pokračovat?", "Chyba")) break;
                 }

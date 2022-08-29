@@ -57,5 +57,11 @@ public class TestGroup : NamedEntity, ICloneable
             testGroup.TestActions.Add(act);
         }
         return testGroup;
+
+
+
     }
+
+    [NotMapped]
+    public int internalId { get; set; }
 }

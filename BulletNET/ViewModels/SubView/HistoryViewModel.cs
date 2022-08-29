@@ -135,7 +135,7 @@ namespace BulletNET.ViewModels.SubView
             {
                 Source = RadarBoards
             };
-            RadarBoards.Add(_IRepositoryRadarBoard.Items.ToList());
+            RadarBoards.Add(_IRepositoryRadarBoard.Items.Include(rad => rad.TestGroups).ThenInclude(tg => tg.TestActions).ToList());
 
             _TestGroupsOld = new();
             TestGroups = new ObservableCollection<TestGroup>();

@@ -118,6 +118,7 @@
                                 </DataGrid.Background>
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Width="2*" Header="Name" IsReadOnly="True" Binding="{Binding Name}" />
+                                    <DataGridTextColumn Width="*" Header="Measured" IsReadOnly="True" Binding="{Binding Measured, StringFormat=\{0:F\}}" />
                                     <DataGridTextColumn Width="*" Header="Minimum" IsReadOnly="True" Binding="{Binding Minimum, StringFormat=\{0:F\}}" />
                                     <DataGridTextColumn Width="*" Header="Maximum" IsReadOnly="True" Binding="{Binding Maximum, StringFormat=\{0:F\}}" />
                                 </DataGrid.Columns>
@@ -189,13 +190,14 @@
                         </StackPanel>
                         <StackPanel Grid.Row="1">
                             <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
-                                <ToggleButton  Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" IsChecked="{Binding IsWithouDatabase}" />
+                                <ToggleButton  Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" IsChecked="{Binding IsWithoutDatabase}" />
                                 <TextBlock Margin="10 0 0 0" Text="Without database" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
                                 <ToggleButton Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" IsChecked="{Binding IsAutoStart}" />
                                 <TextBlock Margin="10 0 0 0" Text="Autostart" />
                             </StackPanel>
+                           <!-- <Button Content="UpdateDB"  Command="{Binding ChangeDBCommand}"/> -->
                         </StackPanel>
                         <Button  Grid.Row="2"  Command="{Binding StartSequenceCommand}" Foreground="White">
                             <Button.Style>

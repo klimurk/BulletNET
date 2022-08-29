@@ -1,5 +1,4 @@
-﻿using BulletNET.Database.Repositories.Interfaces;
-using BulletNET.EntityFramework.Entities.Users;
+﻿using BulletNET.EntityFramework.Entities.Users;
 using BulletNET.Infrastructure.Commands;
 using BulletNET.Services.Managers;
 using BulletNET.ViewModels.Base;
@@ -47,17 +46,17 @@ namespace BulletNET.ViewModels.SubView
             )
         {
             _IManagerUser = IManagerUser;
-            _IManagerUser.UserAdded += _IManagerUser_UserAdded; ;
+            _IManagerUser.UserAdded += _IManagerUser_UserAdded;
+            _Users = new();
             _Users.CollectionChanged += _IManagerUser_UserAdded;
-            _Users.Add(_IManagerUser.Users);
 
             _UserViewSource = new()
             {
-                Source = _Users.ToList(),
+                Source = _Users,
                 SortDescriptions = { new SortDescription(nameof(User.Name), ListSortDirection.Descending) }
             };
+            _Users.Add(_IManagerUser.Users);
             _UserViewSource.Filter += _UserViewSource_Filter;
-
         }
 
         private void _IManagerUser_UserAdded(object? sender, EventArgs e) => UsersView.Refresh();

@@ -48,13 +48,41 @@
 
         <md:DialogHost x:Name="m_dialogHost" Identifier="dialogHoste" CloseOnClickAway="True">
 
-            <md:DrawerHost IsLeftDrawerOpen="{Binding IsNavigationDrawerOpen, ElementName=appBar, Mode=TwoWay}" LeftDrawerBackground="{DynamicResource MaterialDesignBackground}">
+            <md:DrawerHost  IsLeftDrawerOpen="{Binding IsNavigationDrawerOpen, ElementName=appBar, Mode=TwoWay}" LeftDrawerBackground="{DynamicResource MaterialDesignBackground}">
                 <md:DrawerHost.LeftDrawerContent>
-                    <mde:SideNavigation
+                    <StackPanel Width="250">
+                        <TextBlock Margin="20" />
+                        <Button  Margin="0 5" Style="{StaticResource MaterialDesignFlatButton}" Foreground="{StaticResource BenthorBlue}" HorizontalContentAlignment="Left"  Command="{Binding OpenDashboardViewCommand}">
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <md:PackIcon Height="25" Width="25"  Kind="ViewDashboard" VerticalAlignment="Center" />
+                                    <TextBlock Text="Dashboard" VerticalAlignment="Center" Margin="10 0 0 0 " />
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+                        <Button  Margin="0 5" Style="{StaticResource MaterialDesignFlatButton}" Foreground="{StaticResource BenthorBlue}" HorizontalContentAlignment="Left" Command="{Binding OpenHistoryViewCommand}">
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <md:PackIcon Height="25" Width="25" Kind="History" VerticalAlignment="Center" />
+                                    <TextBlock Text="History" VerticalAlignment="Center" Margin="10 0 0 0 " />
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+                        <Button Margin="0 5"  Style="{StaticResource MaterialDesignFlatButton}"  Foreground="{StaticResource BenthorBlue}" HorizontalContentAlignment="Left" Command="{Binding OpenAdminViewCommand}">
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <md:PackIcon Height="25" Width="25" Kind="AdministratorOutline" VerticalAlignment="Center" />
+                                    <TextBlock Text="Admin" VerticalAlignment="Center" Margin="10 0 0 0 " />
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+                    </StackPanel>
+                    <!--<mde:SideNavigation
                         x:Name="navigationDrawerNav"
-                        Items="{Binding NavigationItems, Mode=OneTime}"
+                        Items="{Binding _NavigationItems}"
                         Width="280"
-                        SelectedItem="{Binding NavigationItemSelected, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                        SelectedItem="{Binding NavigationItemSelected, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                    </mde:SideNavigation>-->
                 </md:DrawerHost.LeftDrawerContent>
                 <Grid>
                     <Grid.RowDefinitions>

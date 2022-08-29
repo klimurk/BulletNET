@@ -38,16 +38,16 @@ namespace BulletNET.Services.Managers
 
         public bool Login(string name, string password)
         {
-            if (name == "administrator" && password == "btadmin")
-            {
-                LoginedUser = new User()
-                {
-                    Name = name,
-                    RoleNum = 10,
-                    Description = "Built-In Administrator"
-                };
-                return true;
-            }
+            //if (name == "administrator" && password == "btadmin")
+            //{
+            //    LoginedUser = new User()
+            //    {
+            //        Name = name,
+            //        RoleNum = 10,
+            //        Description = "Built-In Administrator"
+            //    };
+            //    return true;
+            //}
 
             //Create a SHA256 hash from string
 
@@ -113,7 +113,7 @@ namespace BulletNET.Services.Managers
             Admin = 10
         }
 
-        private string CreateHashCode(string toHash)
+        public string CreateHashCode(string toHash)
         {
             using (SHA256 sha256Hash = SHA256.Create())
             {
