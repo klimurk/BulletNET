@@ -625,23 +625,33 @@ namespace BulletNET.ViewModels.SubView
                     TestGroup = TestGroupList.Any(s => s.internalId == groupID) ? TestGroupList.First(s => s.internalId == groupID) : null,
                 });
             }
-            foreach (var testAction in TestActionList)
-                testAction.TestGroup?.TestActions.Add(testAction);
 
             foreach (var testgroup in TestGroupList)
                 testgroup.RadarBoard?.TestGroups.Add(testgroup);
 
             TestActionList.RemoveAll(s => s.TestGroup is null);
-            TestGroupList.RemoveAll(s => s.RadarBoard is null);
+            TestGroupList.RemoveAll(s => s.RadarBoard is null || s.TestActions.Count == 0);
             TestGroupList.DistinctBy(s => s.TimeStamp);
+            RadarBoardList.RemoveAll(s => s.TestGroups.Count == 0);
 
             try
             {
-                _IRepositoryRadarBoards.Add(RadarBoardList);
-                _IRepositoryTestGroups.Add(TestGroupList);
-                _IRepositoryTestActions.Add(TestActionList);
+                _IRepositoryRadarBoards.AddIfNotExists(RadarBoardList);
             }
-            catch { };
+            catch (Exception e) { };
+            try
+            {
+                _IRepositoryTestGroups.AddIfNotExists(TestGroupList);
+            }
+            catch (Exception e) { };
+
+            foreach (var testAction in TestActionList)
+                testAction.TestGroup?.TestActions.Add(testAction);
+            try
+            {
+                _IRepositoryTestActions.AddIfNotExists(TestActionList);
+            }
+            catch (Exception e) { };
         }
 
         #endregion ChangeDBCommand

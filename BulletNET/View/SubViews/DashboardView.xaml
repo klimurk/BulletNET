@@ -197,7 +197,7 @@
                                 <ToggleButton Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" IsChecked="{Binding IsAutoStart}" />
                                 <TextBlock Margin="10 0 0 0" Text="Autostart" />
                             </StackPanel>
-                           <!-- <Button Content="UpdateDB"  Command="{Binding ChangeDBCommand}"/> -->
+                            <Button Content="UpdateDB"  Command="{Binding ChangeDBCommand}" />
                         </StackPanel>
                         <Button  Grid.Row="2"  Command="{Binding StartSequenceCommand}" Foreground="White">
                             <Button.Style>

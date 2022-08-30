@@ -165,6 +165,7 @@ internal class MainWindowViewModel : ViewModel
     {
         IsUserLogined = _IManagerUser.IsLogined;
         CurrentUser = _IManagerUser.LoginedUser;
+        if (!IsUserLogined) CurrentModel = null;
     }
 
     #endregion Ctor

@@ -101,17 +101,41 @@ namespace BulletNET.ViewModels.SubView
 
         #region Filtering (view)
 
-        public string Filter
+        public string FilterBoard
         {
-            get => _Filter;
+            get => _FilterBoard;
             set
             {
-                if (Set(ref _Filter, value))
+                if (Set(ref _FilterBoard, value))
+                    _RadarBoardViewSource.View.Refresh();
+            }
+        }
+
+        private string _FilterBoard;
+
+        public string FilterTestAction
+        {
+            get => _FilterTestAction;
+            set
+            {
+                if (Set(ref _FilterTestAction, value))
                     _TestActionViewSource.View.Refresh();
             }
         }
 
-        private string _Filter;
+        private string _FilterTestAction;
+
+        public string FilterTestGroup
+        {
+            get => _FilterTestGroup;
+            set
+            {
+                if (Set(ref _FilterTestGroup, value))
+                    _TestGroupViewSource.View.Refresh();
+            }
+        }
+
+        private string _FilterTestGroup;
 
         #endregion Filtering (view)
 
@@ -150,6 +174,39 @@ namespace BulletNET.ViewModels.SubView
             {
                 Source = _TestActions
             };
+
+            _RadarBoardViewSource.Filter += _RadarBoardViewSource_Filter;
+            _TestGroupViewSource.Filter += _TestGroupViewSource_Filter;
+            _TestActionViewSource.Filter += _TestActionViewSource_Filter;
+        }
+
+        private void _TestActionViewSource_Filter(object sender, FilterEventArgs e)
+        {
+            if (e.Item is not TestAction testAction || string.IsNullOrEmpty(testAction.Name)) return;
+            FilterTestAction ??= "";
+            if (!testAction.Name.Contains(FilterTestAction, StringComparison.OrdinalIgnoreCase))
+                e.Accepted = false;
+        }
+
+        private void _TestGroupViewSource_Filter(object sender, FilterEventArgs e)
+        {
+            if (e.Item is not TestGroup testGroup) return;
+            FilterTestGroup ??= "";
+            if (!(
+                testGroup.Name.Contains(FilterTestGroup, StringComparison.OrdinalIgnoreCase)
+                || testGroup.User.Name.Contains(FilterTestGroup, StringComparison.OrdinalIgnoreCase)
+                || testGroup.Comment.Title.Contains(FilterTestGroup, StringComparison.OrdinalIgnoreCase)
+                )) e.Accepted = false;
+        }
+
+        private void _RadarBoardViewSource_Filter(object sender, FilterEventArgs e)
+        {
+            if (e.Item is not RadarBoard radarBoard) return;
+            FilterBoard ??= "";
+            if (!(
+                radarBoard.MainBoardID.Contains(FilterBoard, StringComparison.OrdinalIgnoreCase)
+                || radarBoard.RadarBoardID.Contains(FilterBoard, StringComparison.OrdinalIgnoreCase)
+                )) e.Accepted = false;
         }
 
         private void _TestActions_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) => TestActionsView.Refresh();
@@ -196,19 +253,5 @@ namespace BulletNET.ViewModels.SubView
         }
 
         #endregion SaveDataCommand
-
-        private void _TestActionViewSource_Filter(object sender, FilterEventArgs e)
-        {
-            if (e.Item is not TestAction testAction || string.IsNullOrEmpty(testAction.Name)) return;
-            Filter ??= "";
-            if (!(
-
-                    (testAction.Name.ToLower().Contains(Filter.ToLower()))
-                    || (testAction.TestGroup.Name.ToLower().Contains(Filter.ToLower()))
-                    || (testAction.TestGroup.User.Name.ToLower().Contains(Filter.ToLower()))
-                    || (testAction.TestGroup.RadarBoard.MainBoardID.ToLower().Contains(Filter.ToLower()))
-                ))
-                e.Accepted = false;
-        }
     }
 }

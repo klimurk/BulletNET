@@ -46,7 +46,7 @@
                                     Height="Auto"
                                     BorderBrush="SkyBlue"
                                     VerticalContentAlignment="Center"
-                                    Foreground="white" FontSize="20"
+                                    Foreground="Black" FontSize="18"
                                     Style="{StaticResource MaterialDesignComboBoxEditableTextBox}"
                                     x:Name="FilterBoard"
                                     md:TextFieldAssist.DecorationVisibility="Visible">
@@ -120,7 +120,7 @@
                                     Height="Auto"
                                     BorderBrush="SkyBlue"
                                     VerticalContentAlignment="Center"
-                                    Foreground="white" FontSize="20"
+                                    Foreground="Black" FontSize="18"
                                     Style="{StaticResource MaterialDesignComboBoxEditableTextBox}"
                                     x:Name="FilterTestAction"
                                     md:TextFieldAssist.DecorationVisibility="Visible">
@@ -238,7 +238,7 @@
                                     Height="Auto"
                                     BorderBrush="SkyBlue"
                                     VerticalContentAlignment="Center"
-                                    Foreground="white" FontSize="20"
+                                    Foreground="Black" FontSize="18"
                                     Style="{StaticResource MaterialDesignComboBoxEditableTextBox}"
                                     x:Name="FilterTestGroup"
                                     md:TextFieldAssist.DecorationVisibility="Visible">

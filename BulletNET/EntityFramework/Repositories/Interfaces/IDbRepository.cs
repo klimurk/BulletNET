@@ -1,4 +1,5 @@
 ﻿using BulletNET.Database.Entities.Base.Interfaces;
+using System.Linq.Expressions;
 
 namespace BulletNET.Database.Repositories.Interfaces
 {
@@ -48,6 +49,9 @@ namespace BulletNET.Database.Repositories.Interfaces
         /// <param name="Cancel">The cancel.</param>
         /// <returns>A Task.</returns>
         Task<T> AddAsync(T item, CancellationToken Cancel = default);
+        public T? AddIfNotExists(T item, Expression<Func<T, bool>> predicate = null);
+
+        public void AddIfNotExists(IEnumerable<T> item, Expression<Func<T, bool>> predicate = null);
 
         /// <summary>
         /// Update item and save.

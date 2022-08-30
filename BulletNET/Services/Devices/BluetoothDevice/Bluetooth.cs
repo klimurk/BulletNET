@@ -8,11 +8,12 @@ using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.Advertisement;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
+using Windows.Devices.Radios;
 using Windows.Storage.Streams;
 
 namespace BulletNET.Services.Devices.BluetoothDevice
 {
-    public class Bluetooth : Test, IBluetooth
+    public class Bluetooth : Test, IBluetooth, IDisposable
     {
         #region Services
 
@@ -27,7 +28,7 @@ namespace BulletNET.Services.Devices.BluetoothDevice
 
         #region private
 
-        private readonly BluetoothLEAdvertisementWatcher _watcher = new BluetoothLEAdvertisementWatcher();
+        private readonly BluetoothLEAdvertisementWatcher _watcher = new();
         private ulong _lastAdvertisementAdress;
         private BluetoothLEDevice _BSdevice;
         private GattCharacteristic _characteristic_notify;
@@ -39,7 +40,6 @@ namespace BulletNET.Services.Devices.BluetoothDevice
         public bool AdvertisementReceived { get; set; }
 
         private GattCharacteristicsResult characteristicResult;
-        private ulong previousPairAdress;
 
         #endregion private
 
@@ -48,9 +48,7 @@ namespace BulletNET.Services.Devices.BluetoothDevice
         public bool BLEMessageReceived { get; set; }
         public byte BoardStatusPacket { get; set; }
         public char BoardStatus => Convert.ToChar(BoardStatusPacket);
-
-        public bool IsConnected { get; set; }
-        public bool isEnabled { get; set; }
+        public bool isEnabled => _watcher.Status == BluetoothLEAdvertisementWatcherStatus.Started;
 
         #endregion public
 
@@ -70,10 +68,14 @@ namespace BulletNET.Services.Devices.BluetoothDevice
 
         public void StartListening()
         {
+            if (!(CheckPeripheralRoleSupportAsync().Result && GetBluetoothIsEnabledAsync().Result))
+            {
+                _IUserDialogService.ShowError("Please turn on Bluetooth adapter and reconnect", "Bluetooth");
+                return;
+            }
             _watcher.Received += OnAdvertisementReceived;
             _watcher.ScanningMode = BluetoothLEScanningMode.Passive;
             _watcher.Start();
-            isEnabled = true;
         }
 
         #region Events
@@ -145,7 +147,6 @@ namespace BulletNET.Services.Devices.BluetoothDevice
                     }
                     try
                     {
-
                         GattDeviceServicesResult GattServices = await _BSdevice.GetGattServicesAsync();
                         if (GattServices.Status == GattCommunicationStatus.Success)
                         {
@@ -156,7 +157,6 @@ namespace BulletNET.Services.Devices.BluetoothDevice
                     {
                         _IUserDialogService.ShowError("Bluetooth is disabled", "Bluetooth");
                     }
-
                 }
 
                 bool notifyOK = false;
@@ -189,8 +189,9 @@ namespace BulletNET.Services.Devices.BluetoothDevice
                                     if (characteristic.Uuid.ToString() == __NotifyCharacteristicsId)
                                     {
                                         _characteristic_notify = characteristic;
-                                        GattCommunicationStatus status = await _characteristic_notify.WriteClientCharacteristicConfigurationDescriptorAsync(
-                                                              GattClientCharacteristicConfigurationDescriptorValue.Notify);
+                                        GattCommunicationStatus status =
+                                            await _characteristic_notify
+                                            .WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
                                         if (status == GattCommunicationStatus.Success)
                                         {
                                             // Server has been informed of clients interest.
@@ -246,49 +247,6 @@ namespace BulletNET.Services.Devices.BluetoothDevice
             }
         }
 
-        //public async void Pair()
-        //{
-        //    _BSdevice = await BluetoothLEDevice.FromBluetoothAddressAsync(_lastAdvertisementAdress);
-
-        //    if (_BSdevice == null)
-        //    {
-        //        Console.WriteLine("BulletNETSeeker device not found");
-        //        return;
-        //    }
-
-        //    if (_BSdevice.ConnectionStatus == BluetoothConnectionStatus.Disconnected)
-        //    {
-        //        _BSdevice.DeviceInformation.Pairing.Custom.PairingRequested += (sender, args) =>
-        //        {
-        //            args.Accept();
-        //        };
-
-        //        var sss = await _BSdevice.DeviceInformation.Pairing.Custom.PairAsync(DevicePairingKinds.ConfirmOnly, DevicePairingProtectionLevel.EncryptionAndAuthentication);
-
-        //        GattDeviceServicesResult GattServices = await _BSdevice.GetGattServicesAsync();
-
-        //        if (GattServices.Status == GattCommunicationStatus.Success)
-        //        {
-        //            var services = GattServices.Services;
-
-        //            if (_lastAdvertisementAdress == previousPairAdress)
-        //            {
-        //                SubscribeToCharacteristicNotifications(false);
-        //            }
-        //            else
-        //            {
-        //                SubscribeToCharacteristicNotifications(true);
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        SubscribeToCharacteristicNotifications(false);
-        //    }
-
-        //    previousPairAdress = _lastAdvertisementAdress;
-        //}
-
         public async Task<bool> Unpair()
         {
             if (_BSdevice.DeviceInformation.Pairing.IsPaired)
@@ -303,69 +261,6 @@ namespace BulletNET.Services.Devices.BluetoothDevice
         }
 
         #endregion Pairing
-
-        //public async void SubscribeToCharacteristicNotifications(bool firstConnection)
-        //{
-        //    int attempts = 0;
-
-        //    while (attempts < 3)
-        //    {
-        //        try
-        //        {
-        //            firstConnection = true;
-
-        //            _BSdevice = await BluetoothLEDevice.FromBluetoothAddressAsync(_lastAdvertisementAdress);
-        //            GattDeviceServicesResult GattServices = await _BSdevice.GetGattServicesAsync(BluetoothCacheMode.Uncached);
-
-        //            foreach (var service in GattServices.Services)
-        //            {
-        //                if (service.Uuid.ToString() == _ServiceId)
-        //                {
-        //                    if (firstConnection)
-        //                    {
-        //                        characteristicResult = await service.GetCharacteristicsAsync();
-
-        //                        if (characteristicResult.Status == GattCommunicationStatus.AccessDenied)
-        //                        {
-        //                            Console.WriteLine("BLE ACCES DENIED");
-        //                            IsConnected = false;
-        //                        }
-        //                    }
-
-        //                    if (characteristicResult.Status == GattCommunicationStatus.Success)
-        //                    {
-        //                        foreach (var characteristic in characteristicResult.Characteristics)
-        //                        {
-        //                            if (characteristic.Uuid.ToString() == _NotifyCharacteristicsId)
-        //                            {
-        //                                _characteristic_notify = characteristic;
-        //                                if (await _characteristic_notify.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify) == GattCommunicationStatus.Success)
-        //                                {
-        //                                    // Server has been informed of clients interest.
-        //                                    _characteristic_notify.ValueChanged += OnCharacteristic_ValueChanged;
-        //                                    Console.WriteLine("BLE NOTIFY OK");
-        //                                }
-        //                            }
-        //                            if (characteristic.Uuid.ToString() == _WriteCharacteristicsId)
-        //                            {
-        //                                _characteristic_write = characteristic;
-        //                                Console.WriteLine("BLE WRITE OK");
-        //                            }
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //            IsConnected = true;
-        //            Console.WriteLine("BLE characteristic OK");
-        //            break;
-        //        }
-        //        catch
-        //        {
-        //            Console.WriteLine("BLE characteristic FAIL, repeat " + attempts);
-        //            attempts++;
-        //        }
-        //    }
-        //}
 
         #region Processes
 
@@ -734,6 +629,35 @@ namespace BulletNET.Services.Devices.BluetoothDevice
             EndTest();
             if (!IsPassed && _IUserDialogService.ConfirmInformation("> " + TestName + " < failed. Retry?", "Test failed")) TestCharging();
             return IsPassed;
+        }
+
+        public void Dispose()
+        {
+            _watcher.Received -= OnAdvertisementReceived;
+            _watcher.Stop();
+        }
+
+        private async Task<bool> CheckPeripheralRoleSupportAsync()
+        {
+            // BT_Code: New for Creator's Update - Bluetooth adapter has properties of the local BT radio.
+            var localAdapter = await BluetoothAdapter.GetDefaultAsync();
+
+            if (localAdapter != null)
+            {
+                return localAdapter.IsPeripheralRoleSupported;
+            }
+            else
+            {
+                // Bluetooth is not turned on
+                return false;
+            }
+        }
+
+        public async Task<bool> GetBluetoothIsEnabledAsync()
+        {
+            var radios = await Radio.GetRadiosAsync();
+            var bluetoothRadio = radios.FirstOrDefault(radio => radio.Kind == RadioKind.Bluetooth);
+            return bluetoothRadio != null && bluetoothRadio.State == RadioState.On;
         }
     }
 }

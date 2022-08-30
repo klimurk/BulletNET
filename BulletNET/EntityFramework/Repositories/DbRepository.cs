@@ -1,6 +1,7 @@
 ﻿using BulletNET.Database.Repositories.Interfaces;
 using BulletNET.EntityFramework.Context;
 using BulletNET.EntityFramework.Entities.Base;
+using System.Linq.Expressions;
 
 namespace BulletNET.EntityFramework.Repositories
 {
@@ -73,10 +74,12 @@ namespace BulletNET.EntityFramework.Repositories
                 _db.SaveChanges();
             return item;
         }
+
         public void Add(IEnumerable<T> item)
         {
             foreach (T? it in item) Add(it);
         }
+
         /// <summary>
         /// Add item in repository and db async
         /// </summary>
@@ -91,6 +94,24 @@ namespace BulletNET.EntityFramework.Repositories
                 await _db.SaveChangesAsync(Cancel).ConfigureAwait(false);
 
             return item;
+        }
+
+        public T? AddIfNotExists(T item, Expression<Func<T, bool>> predicate = null)
+        {
+            bool exists = predicate is null ? _Set.Any() : _Set.Any(predicate);
+            return exists ? null : Add(item);
+        }
+
+        public void AddIfNotExists(IEnumerable<T> item, Expression<Func<T, bool>> predicate = null)
+        {
+            foreach (T? it in item)
+            {
+                try
+                {
+                    AddIfNotExists(it, predicate);
+                }
+                catch (Exception e) { }
+            }
         }
 
         #endregion Add

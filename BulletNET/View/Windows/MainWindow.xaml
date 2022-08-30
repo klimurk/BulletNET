@@ -7,8 +7,8 @@
     xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mde="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
     xmlns:converters="clr-namespace:BulletNET.Infrastructure.Converters.Converters"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     DataContext="{Binding MainWindowModel, Source={StaticResource Locator}}"
-    x:Name="Window"
     Title="BulletSeeker" Height="720" Width="1280">
     <Window.Resources>
         <!--<Storyboard x:Key="OpenMenu">
@@ -36,14 +36,11 @@
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>-->
     </Window.Resources>
-    <Window.Triggers>
-        <!--<EventTrigger RoutedEvent="ButtonBase.Click" SourceName="ButtonOpenMenu">
-            <BeginStoryboard Storyboard="{StaticResource OpenMenu}" />
-        </EventTrigger>
-        <EventTrigger RoutedEvent="ButtonBase.Click" SourceName="ButtonCloseMenu">
-            <BeginStoryboard Storyboard="{StaticResource CloseMenu}" />
-        </EventTrigger>-->
-    </Window.Triggers>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{StaticResource OpenLoginWindowCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
 
         <md:DialogHost x:Name="m_dialogHost" Identifier="dialogHoste" CloseOnClickAway="True">
