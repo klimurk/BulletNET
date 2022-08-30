@@ -58,8 +58,6 @@ public class TestGroup : NamedEntity, ICloneable
         }
         return testGroup;
 
-
-
     }
 
     [NotMapped]
