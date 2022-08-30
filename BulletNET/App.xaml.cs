@@ -65,6 +65,7 @@ namespace BulletNET
 
         public static void ConfigureServices(HostBuilderContext host, IServiceCollection services)
             => services
+                .RegisterFirtsLevelServices()
                 .RegisterDatabase(host.Configuration.GetSection("Database"))
                 .RegisterServices()
                 .RegisterViewModels();

@@ -21,7 +21,7 @@ namespace BulletNET.Data
             _Logger.LogInformation("Инициализация БД...");
 
             //_Logger.LogInformation("Удаление существующей БД...");
-            //await _db.Database.EnsureDeletedAsync().ConfigureAwait(false);
+            await _db.Database.EnsureDeletedAsync().ConfigureAwait(false);
             //_Logger.LogInformation("Удаление существующей БД выполнено за {0} мс", timer.ElapsedMilliseconds);
 
             //_db.Database.EnsureCreated();
@@ -45,9 +45,23 @@ namespace BulletNET.Data
             await _db.Users.AddAsync(new User
             {
                 Name = "administrator",
-                RoleNum = (int)ManagerUser.UserRoleNum.Admin,
+                RoleNum = (int)IManagerUser.UserRoleNum.Admin,
                 Description = "Administartor",
                 Hashcode = ((IManagerUser)App.Services.GetService(typeof(IManagerUser))).CreateHashCode("btadmin")
+            });
+            await _db.Users.AddAsync(new User
+            {
+                Name = "simon.novotny",
+                RoleNum = (int)IManagerUser.UserRoleNum.Admin,
+                Description = "Administartor",
+                Hashcode = ((IManagerUser)App.Services.GetService(typeof(IManagerUser))).CreateHashCode("btadmin")
+            });
+            await _db.Users.AddAsync(new User
+            {
+                Name = "oleksii.klymov",
+                RoleNum = (int)IManagerUser.UserRoleNum.Admin,
+                Description = "Administartor",
+                Hashcode = ((IManagerUser)App.Services.GetService(typeof(IManagerUser))).CreateHashCode("123")
             });
             await _db.SaveChangesAsync();
 

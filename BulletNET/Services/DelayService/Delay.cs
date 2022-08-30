@@ -1,5 +1,5 @@
 ﻿using BulletNET.Services.Devices.Base;
-using Pallet.Services.UserDialogService.Interfaces;
+using BulletNET.Services.UserDialogService.Interfaces;
 
 namespace BulletNET.Services.DelayService;
 

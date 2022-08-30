@@ -1,7 +1,7 @@
 ﻿using BulletNET.Services.Devices.Base;
 using BulletNET.Services.Devices.MansonDevice.Interface;
+using BulletNET.Services.UserDialogService.Interfaces;
 using Microsoft.Win32;
-using Pallet.Services.UserDialogService.Interfaces;
 using System.IO.Ports;
 using System.Text.RegularExpressions;
 

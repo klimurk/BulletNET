@@ -53,7 +53,7 @@
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <md:PackIcon Height="25" Width="25"  Kind="ViewDashboard" VerticalAlignment="Center" />
-                                    <TextBlock Text="Dashboard" VerticalAlignment="Center" Margin="10 0 0 0 " />
+                                    <TextBlock Text="Testing" VerticalAlignment="Center" Margin="10 0 0 0 " />
                                 </StackPanel>
                             </Button.Content>
                         </Button>

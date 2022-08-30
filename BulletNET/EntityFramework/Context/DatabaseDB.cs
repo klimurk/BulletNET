@@ -43,8 +43,9 @@ namespace BulletNET.EntityFramework.Context
         public DatabaseDB(DbContextOptions<DatabaseDB> options) : base(options)
         {
             ChangeTracker.LazyLoadingEnabled = false;
+            
         }
-
+        
         #endregion Ctor
 
         #region Creating model (convertors, keys...)

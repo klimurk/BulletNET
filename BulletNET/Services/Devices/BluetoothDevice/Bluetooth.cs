@@ -3,7 +3,7 @@ using BulletNET.Services.Devices.BluetoothDevice.Interface;
 using BulletNET.Services.Devices.MansonDevice.Interface;
 using BulletNET.Services.Devices.PicoDevices.Interface;
 using BulletNET.Services.Devices.QuidoDevice.Interfaces;
-using Pallet.Services.UserDialogService.Interfaces;
+using BulletNET.Services.UserDialogService.Interfaces;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.Advertisement;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;

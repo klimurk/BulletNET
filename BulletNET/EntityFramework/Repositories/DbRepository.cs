@@ -104,14 +104,7 @@ namespace BulletNET.EntityFramework.Repositories
 
         public void AddIfNotExists(IEnumerable<T> item, Expression<Func<T, bool>> predicate = null)
         {
-            foreach (T? it in item)
-            {
-                try
-                {
-                    AddIfNotExists(it, predicate);
-                }
-                catch (Exception e) { }
-            }
+            foreach (T? it in item) AddIfNotExists(it, predicate);
         }
 
         #endregion Add

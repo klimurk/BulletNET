@@ -1,7 +1,7 @@
 ﻿using BulletNET.Infrastructure.Commands;
 using BulletNET.Services.Managers;
+using BulletNET.Services.UserDialogService.Interfaces;
 using BulletNET.ViewModels.Base;
-using Pallet.Services.UserDialogService.Interfaces;
 using System.Windows.Controls;
 
 namespace BulletNET.ViewModels.Windows

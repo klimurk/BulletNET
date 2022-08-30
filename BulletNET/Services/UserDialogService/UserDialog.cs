@@ -1,5 +1,5 @@
 ﻿using BulletNET.Database.Entities.Base.Interfaces;
-using Pallet.Services.UserDialogService.Interfaces;
+using BulletNET.Services.UserDialogService.Interfaces;
 
 namespace BulletNET.Services.UserDialogService
 {

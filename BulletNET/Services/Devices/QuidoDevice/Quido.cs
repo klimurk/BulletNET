@@ -2,8 +2,8 @@
 using BulletNET.Services.Devices.BluetoothDevice.Interface;
 using BulletNET.Services.Devices.QuidoDevice.Interfaces;
 using BulletNET.Services.Devices.QuidoDevice.QuidoSupport;
+using BulletNET.Services.UserDialogService.Interfaces;
 using Microsoft.Win32;
-using Pallet.Services.UserDialogService.Interfaces;
 using System.IO;
 using System.IO.Ports;
 using System.Text.RegularExpressions;

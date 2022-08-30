@@ -22,7 +22,7 @@ namespace BulletNET.Services.Managers
         event EventHandler UserAdded;
         public enum UserRoleNum
         {
-            None = 0,
+            HistoryViewer = 0,
             Worker = 1,
             Manager = 2,
             Admin = 10

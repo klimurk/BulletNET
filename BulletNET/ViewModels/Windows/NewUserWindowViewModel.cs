@@ -1,7 +1,7 @@
 ﻿using BulletNET.Infrastructure.Commands;
 using BulletNET.Services.Managers;
+using BulletNET.Services.UserDialogService.Interfaces;
 using BulletNET.ViewModels.Base;
-using Pallet.Services.UserDialogService.Interfaces;
 
 namespace BulletNET.ViewModels.Windows
 {
@@ -60,9 +60,9 @@ namespace BulletNET.ViewModels.Windows
             _UserManager = UserManager;
             RoleNums = new()
             {
-                nameof(ManagerUser.UserRoleNum.Worker),
-                nameof(ManagerUser.UserRoleNum.Manager),
-                nameof(ManagerUser.UserRoleNum.Admin)
+                nameof(IManagerUser.UserRoleNum.Worker),
+                nameof(IManagerUser.UserRoleNum.Manager),
+                nameof(IManagerUser.UserRoleNum.Admin)
             };
         }
 
@@ -90,7 +90,7 @@ namespace BulletNET.ViewModels.Windows
         {
             var window = (Window)obj;
 
-            Enum.TryParse(SelectedRoleNum, out ManagerUser.UserRoleNum role);
+            Enum.TryParse(SelectedRoleNum, out IManagerUser.UserRoleNum role);
 
             if (_UserManager.CreateNewUser(UserName, Description, Password, (int)role))
                 window.Close();

@@ -1,6 +1,6 @@
 ﻿using BulletNET.Database.Repositories.Interfaces;
 using BulletNET.EntityFramework.Entities.Users;
-using Pallet.Services.UserDialogService.Interfaces;
+using BulletNET.Services.UserDialogService.Interfaces;
 using System.Security.Cryptography;
 
 namespace BulletNET.Services.Managers
@@ -105,13 +105,13 @@ namespace BulletNET.Services.Managers
 
         public bool IsAdmin => LoginedUser?.RoleNum == 10;
 
-        public enum UserRoleNum
-        {
-            None = 0,
-            Worker = 1,
-            Manager = 2,
-            Admin = 10
-        }
+        //public enum UserRoleNum
+        //{
+        //    HistoryViewer = 0,
+        //    Worker = 1,
+        //    Manager = 2,
+        //    Admin = 10
+        //}
 
         public string CreateHashCode(string toHash)
         {

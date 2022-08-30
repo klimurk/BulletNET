@@ -13,7 +13,6 @@ using BulletNET.Services.UserDialogService.Interfaces;
 using BulletNET.ViewModels.Base;
 using BulletNET.ViewModels.SubView;
 using MaterialDesignExtensions.Model;
-using Pallet.Services.UserDialogService.Interfaces;
 
 namespace BulletNET.ViewModels.Windows;
 
@@ -99,7 +98,7 @@ internal class MainWindowViewModel : ViewModel
 
     #endregion Properties (View)
 
-    private bool IsAdmin => CurrentUser?.RoleNum >= (int)ManagerUser.UserRoleNum.Admin;
+    private bool IsAdmin => CurrentUser?.RoleNum >= (int)IManagerUser.UserRoleNum.Admin;
 
     public ICollectionView NavigationItemsView => _NavigationItemViewSource.View;
 
@@ -186,7 +185,7 @@ internal class MainWindowViewModel : ViewModel
     /// </summary>
     /// <param name="arg">The arg.</param>
     /// <returns>A bool.</returns>
-    private bool CanOpenHistoryViewCommandExecute(object arg) => (CurrentModel is not HistoryViewModel) && CurrentUser?.RoleNum >= (int)IManagerUser.UserRoleNum.Manager;
+    private bool CanOpenHistoryViewCommandExecute(object arg) => (CurrentModel is not HistoryViewModel) && CurrentUser?.RoleNum >= (int)IManagerUser.UserRoleNum.HistoryViewer;
 
     /// <summary>
     /// Default function.

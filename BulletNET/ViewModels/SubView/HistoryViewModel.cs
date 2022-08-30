@@ -2,8 +2,8 @@
 using BulletNET.EntityFramework.Entities.Radar;
 using BulletNET.Infrastructure.Commands;
 using BulletNET.Services.Managers;
+using BulletNET.Services.UserDialogService.Interfaces;
 using BulletNET.ViewModels.Base;
-using Pallet.Services.UserDialogService.Interfaces;
 
 namespace BulletNET.ViewModels.SubView
 {
@@ -234,7 +234,9 @@ namespace BulletNET.ViewModels.SubView
         /// </summary>
         /// <param name="arg">The arg.</param>
         /// <returns>A bool.</returns>
-        private bool CanSaveDataCommandExecute(object arg) => true;
+        private bool CanSaveDataCommandExecute(object arg) => _TestGroupsOld.Any(s =>
+            (_TestGroups.First(w => w.ID == s.ID).Comment.Text != s.Comment.Text) ||
+            (_TestGroups.First(w => w.ID == s.ID).Comment.Title != s.Comment.Title));
 
         /// <summary>
         /// Default function.

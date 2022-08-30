@@ -1,7 +1,11 @@
 ﻿using BulletNET.EntityFramework;
 using BulletNET.EntityFramework.Context;
+using BulletNET.Services.UserDialogService.Interfaces;
+using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MySqlConnector;
 
 namespace BulletNET.Data
 {
@@ -17,19 +21,64 @@ namespace BulletNET.Data
                     default: throw new InvalidOperationException($"Connection type {type} not supported");
 
                     case "MSSQL":
-                        opt.UseSqlServer(Configuration.GetConnectionString(type));
+                        try
+                        {
+                            string connString = Configuration.GetConnectionString(type);
+                            using (SqlConnection conn = new(connString))
+                            {
+                                conn.Open();
+                            }
+                            opt.
+                            opt.UseSqlServer(Configuration.GetConnectionString(type));
+                        }
+                        catch (Exception)
+                        {
+                        }
                         break;
 
                     case "SQLite":
-                        opt.UseSqlite(Configuration.GetConnectionString(type));
+                        try
+                        {
+                            string connString = Configuration.GetConnectionString(type);
+                            using (SqliteConnection conn = new(connString))
+                            {
+                                conn.Open();
+                            }
+                            opt.UseSqlite(Configuration.GetConnectionString(type));
+                        }
+                        catch (Exception)
+                        {
+                        }
                         break;
 
                     case "MySqlHome":
-                        opt.UseMySql(Configuration.GetConnectionString(type), ServerVersion.AutoDetect(Configuration.GetConnectionString(type)));
+                        try
+                        {
+                            string connString = Configuration.GetConnectionString(type);
+                            using (MySqlConnection conn = new(connString))
+                            {
+                                conn.Open();
+                            }
+                            opt.UseMySql(Configuration.GetConnectionString(type), ServerVersion.AutoDetect(Configuration.GetConnectionString(type)));
+                        }
+                        catch (Exception)
+                        {
+                        }
                         break;
 
                     case "MySqlOffice":
-                        opt.UseMySql(Configuration.GetConnectionString(type), ServerVersion.AutoDetect(Configuration.GetConnectionString(type)));
+                        try
+                        {
+                            string connString = Configuration.GetConnectionString(type);
+                            using (SqlConnection conn = new(connString))
+                            {
+                                conn.Open();
+                            }
+                            opt.UseMySql(Configuration.GetConnectionString(type), ServerVersion.AutoDetect(Configuration.GetConnectionString(type)));
+                        }
+                        catch (Exception)
+                        {
+                        }
                         break;
 
                     case "InMemory":

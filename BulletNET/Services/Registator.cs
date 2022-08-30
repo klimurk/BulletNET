@@ -15,7 +15,6 @@ using BulletNET.Services.SequenceReaderService.Interfaces;
 using BulletNET.Services.UserDialogService;
 using BulletNET.Services.UserDialogService.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using Pallet.Services.UserDialogService.Interfaces;
 
 namespace BulletNET.Services
 {
@@ -23,7 +22,6 @@ namespace BulletNET.Services
     {
         public static IServiceCollection RegisterServices(this IServiceCollection services) =>
             services
-                .AddTransient<IUserDialogService, UserDialog>()
                 .AddTransient<IOpenFileDialogService, OpenFileDialogService>()
                 .AddSingleton<ISequenceReader, SequenceReader>()
                 .AddSingleton<IBarcodeCRC, BarcodeCRC>()
@@ -34,6 +32,10 @@ namespace BulletNET.Services
                 .AddSingleton<IDelay, Delay>()
                 .AddSingleton<IManagerUser, ManagerUser>()
 
+            ;
+        public static IServiceCollection RegisterFirtsLevelServices(this IServiceCollection services) =>
+            services
+                .AddTransient<IUserDialogService, UserDialog>()
             ;
     }
 }

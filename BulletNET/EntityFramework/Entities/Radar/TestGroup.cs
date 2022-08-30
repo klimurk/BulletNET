@@ -61,5 +61,5 @@ public class TestGroup : NamedEntity, ICloneable
     }
 
     [NotMapped]
-    public int internalId { get; set; }
+    public string boardSN { get; set; }
 }

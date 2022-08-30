@@ -1,8 +1,8 @@
 ﻿using BulletNET.Services.Devices.Base;
 using BulletNET.Services.Devices.PicoDevices.Interface;
 using BulletNET.Services.Devices.PicoDevices.PicoSupport;
+using BulletNET.Services.UserDialogService.Interfaces;
 using MathNet.Numerics.IntegralTransforms;
-using Pallet.Services.UserDialogService.Interfaces;
 using PicoPinnedArray;
 using PicoStatus;
 using PS2000AImports;

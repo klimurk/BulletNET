@@ -14,7 +14,6 @@ using BulletNET.ViewModels.Base;
 using LiveCharts;
 using LiveCharts.Wpf;
 using MySqlConnector;
-using Pallet.Services.UserDialogService.Interfaces;
 
 namespace BulletNET.ViewModels.SubView
 {
@@ -565,6 +564,42 @@ namespace BulletNET.ViewModels.SubView
                 Connection = _conn
             };
 
+            RadarBoardList = ReadRadarGroups(cmdGroup);
+            TestGroupList = ReadTestGroups(cmdGroup);
+            TestActionList = ReadTestActions(cmdGroup);
+
+            _conn.Close();
+
+            foreach (var rb in RadarBoardList)
+            {
+                rb.TestGroups = TestGroupList.Where(s => s.boardSN == rb.MainBoardID).ToList();
+                foreach (var tg in rb.TestGroups)
+                    tg.TestActions = TestActionList.Where(s => s.groupId == tg.ID).ToList();
+            }
+
+            _IRepositoryRadarBoards.Add(RadarBoardList);
+
+            //TestGroupList.RemoveAll(s => s.RadarBoard is null || s.TestActions.Count == 0);
+            //RadarBoardList.RemoveAll(s => s.TestGroups.Count == 0);
+
+            //try
+            //{
+            //    foreach (var testgroup in TestGroupList)
+            //        _IRepositoryTestGroups.AddIfNotExists(testgroup, s => s.TimeStamp == testgroup.TimeStamp);
+            //}
+            //catch (Exception e) { };
+
+            //try
+            //{
+            //    foreach (var testaction in TestActionList)
+            //        _IRepositoryTestActions.AddIfNotExists(testaction, s => s.TestGroup.ID == testaction.TestGroup.ID);
+            //}
+            //catch (Exception e) { };
+        }
+
+        private List<RadarBoard> ReadRadarGroups(MySqlCommand cmdGroup)
+        {
+            List<RadarBoard> RadarBoardList = new();
             cmdGroup.CommandText = "SELECT mainBoardID,radarBoardID,datetime FROM MainRadarBoardPairing";
             MySqlDataReader rdrGroup = cmdGroup.ExecuteReader();
             while (rdrGroup.Read())
@@ -576,35 +611,47 @@ namespace BulletNET.ViewModels.SubView
                 RadarBoardList.Add(new()
                 {
                     MainBoardID = mainboard,
-                    RadarBoardID = radarboard,
+                    RadarBoardID = radarboard
                 });
             }
+
             rdrGroup.Close();
+            return RadarBoardList;
+        }
+
+        private List<TestGroup> ReadTestGroups(MySqlCommand cmdGroup)
+        {
             cmdGroup.CommandText = "SELECT name, datetime, boardSN, id  FROM TestGroup";
-            rdrGroup = cmdGroup.ExecuteReader();
+            MySqlDataReader rdrGroup = cmdGroup.ExecuteReader();
 
             User tempUser = _IManagerUser.Users.First(s => s.Name == "simon.novotny");
+            List<TestGroup> TestGroupList = new();
 
             while (rdrGroup.Read())
             {
-                string name = rdrGroup[0].ToString();
+                string name = rdrGroup[2].ToString();
                 DateTime.TryParse(rdrGroup[1].ToString(), out DateTime datetime);
-                string board = rdrGroup[2].ToString();
-                int.TryParse(rdrGroup[3].ToString(), out int intern);
+                string board = rdrGroup[3].ToString();
 
                 TestGroupList.Add(new()
                 {
                     Name = name,
                     TimeStamp = datetime,
                     User = tempUser,
-                    internalId = intern,
-                    RadarBoard = RadarBoardList.Any(s => s.MainBoardID == board) ? RadarBoardList.First(s => s.MainBoardID == board) : null
+                    boardSN = board
                 });
             }
 
             rdrGroup.Close();
+            return TestGroupList;
+        }
+
+        private List<TestAction> ReadTestActions(MySqlCommand cmdGroup)
+        {
+            List<TestAction> TestActionList = new();
+
             cmdGroup.CommandText = "SELECT measured,maximum, minimum, groupID, valueName, pass  FROM TestAction";
-            rdrGroup = cmdGroup.ExecuteReader();
+            MySqlDataReader rdrGroup = cmdGroup.ExecuteReader();
 
             while (rdrGroup.Read())
             {
@@ -622,36 +669,11 @@ namespace BulletNET.ViewModels.SubView
                     Maximum = maximum,
                     Minimum = minimum,
                     Measured = measured,
-                    TestGroup = TestGroupList.Any(s => s.internalId == groupID) ? TestGroupList.First(s => s.internalId == groupID) : null,
                 });
             }
 
-            foreach (var testgroup in TestGroupList)
-                testgroup.RadarBoard?.TestGroups.Add(testgroup);
-
-            TestActionList.RemoveAll(s => s.TestGroup is null);
-            TestGroupList.RemoveAll(s => s.RadarBoard is null || s.TestActions.Count == 0);
-            TestGroupList.DistinctBy(s => s.TimeStamp);
-            RadarBoardList.RemoveAll(s => s.TestGroups.Count == 0);
-
-            try
-            {
-                _IRepositoryRadarBoards.AddIfNotExists(RadarBoardList);
-            }
-            catch (Exception e) { };
-            try
-            {
-                _IRepositoryTestGroups.AddIfNotExists(TestGroupList);
-            }
-            catch (Exception e) { };
-
-            foreach (var testAction in TestActionList)
-                testAction.TestGroup?.TestActions.Add(testAction);
-            try
-            {
-                _IRepositoryTestActions.AddIfNotExists(TestActionList);
-            }
-            catch (Exception e) { };
+            rdrGroup.Close();
+            return TestActionList;
         }
 
         #endregion ChangeDBCommand
