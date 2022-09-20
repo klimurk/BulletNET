@@ -31,6 +31,6 @@ internal class OpenNewUserWindowCommand : Command
 
     public OpenNewUserWindowCommand()
     {
-        _ManagerUser = (IManagerUser)App.Host.Services.GetService(typeof(IManagerUser));
+        _ManagerUser = (IManagerUser)App.Services.GetService(typeof(IManagerUser));
     }
 }

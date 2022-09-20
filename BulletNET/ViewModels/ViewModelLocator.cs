@@ -6,12 +6,12 @@ namespace BulletNET.ViewModels
 {
     internal class ViewModelLocator
     {
-        public MainWindowViewModel MainWindowModel => App.Host.Services.GetRequiredService<MainWindowViewModel>();
-        public HistoryViewModel HistoryModel => App.Host.Services.GetRequiredService<HistoryViewModel>();
-        public DashBoardViewModel DashBoardModel => App.Host.Services.GetRequiredService<DashBoardViewModel>();
-        public AdminViewModel AdminModel => App.Host.Services.GetRequiredService<AdminViewModel>();
-        public NewUserWindowViewModel NewUserWindowModel => App.Host.Services.GetRequiredService<NewUserWindowViewModel>();
-        public ChangeUserPasswordWindowViewModel ChangeUserPasswordWindowModel => App.Host.Services.GetRequiredService<ChangeUserPasswordWindowViewModel>();
-        public LoginWindowViewModel LoginWindowModel => App.Host.Services.GetRequiredService<LoginWindowViewModel>();
+        public MainWindowViewModel MainWindowModel => App.Services.GetRequiredService<MainWindowViewModel>();
+        public HistoryViewModel HistoryModel => App.Services.GetRequiredService<HistoryViewModel>();
+        public DashBoardViewModel DashBoardModel => App.Services.GetRequiredService<DashBoardViewModel>();
+        public AdminViewModel AdminModel => App.Services.GetRequiredService<AdminViewModel>();
+        public NewUserWindowViewModel NewUserWindowModel => App.Services.GetRequiredService<NewUserWindowViewModel>();
+        public ChangeUserPasswordWindowViewModel ChangeUserPasswordWindowModel => App.Services.GetRequiredService<ChangeUserPasswordWindowViewModel>();
+        public LoginWindowViewModel LoginWindowModel => App.Services.GetRequiredService<LoginWindowViewModel>();
     }
 }

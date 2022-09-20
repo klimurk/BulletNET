@@ -1,6 +1,5 @@
 ﻿using BulletNET.EntityFramework;
 using BulletNET.EntityFramework.Context;
-using BulletNET.Services.UserDialogService.Interfaces;
 using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
@@ -28,7 +27,6 @@ namespace BulletNET.Data
                             {
                                 conn.Open();
                             }
-                            opt.
                             opt.UseSqlServer(Configuration.GetConnectionString(type));
                         }
                         catch (Exception)
@@ -74,11 +72,11 @@ namespace BulletNET.Data
                             {
                                 conn.Open();
                             }
-                            opt.UseMySql(Configuration.GetConnectionString(type), ServerVersion.AutoDetect(Configuration.GetConnectionString(type)));
                         }
                         catch (Exception)
                         {
                         }
+                        opt.UseMySql(Configuration.GetConnectionString(type), ServerVersion.AutoDetect(Configuration.GetConnectionString(type)));
                         break;
 
                     case "InMemory":

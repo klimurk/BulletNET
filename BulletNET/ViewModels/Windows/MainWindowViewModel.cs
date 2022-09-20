@@ -153,6 +153,7 @@ internal class MainWindowViewModel : ViewModel
         _IPico = IPico;
         _IManson = IManson;
         _IBluetooth = IBluetooth;
+        
 
         _IManagerUser = IManagerUser;
         _IOpenFileDialogService = IOpenFileDialogService;

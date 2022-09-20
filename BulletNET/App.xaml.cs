@@ -33,9 +33,10 @@ namespace BulletNET
 
         private static IHost __Host;
 
-        public static IHost Host => __Host ??= Program
-            .CreateHostBuilder(Environment.GetCommandLineArgs())
-            .Build();
+        public static IHost Host => __Host ??= 
+            Program
+                .CreateHostBuilder(Environment.GetCommandLineArgs())
+                .Build();
 
         public static IServiceProvider Services => Host.Services;
 
